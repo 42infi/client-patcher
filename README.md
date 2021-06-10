@@ -3,7 +3,7 @@ Tool for injecting Sploit into Krunker clients
 
 [Source](src)
 
-[Pre-built binary](https://github.com/e9x/kru/releases/download/1.0.2/Patcher.exe).
+[Pre-built binary](https://github.com/e9x/kru/releases/download/1.0.2/Patcher.exe)
 
 ## Building the patcher:
 
