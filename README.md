@@ -3,7 +3,7 @@ Tool for injecting Sploit into Krunker clients
 
 [Source](src)
 
-[Pre-built binary](releases/download/1.0.2/Patcher.exe)
+[Pre-built binary](https://github.com/y9x/client-patcher/releases/download/1.0.2/Patcher.exe)
 
 ## Building the patcher:
 
