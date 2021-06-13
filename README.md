@@ -5,7 +5,7 @@ Tool for injecting Sploit into Krunker clients
 
 ## Installation:
 
-1. Download the [standalone executable](https://github.com/e9x/kru/releases/download/1.0.2/Patcher.exe)
+1. Download the [standalone executable](https://github.com/y9x/client-patcher/releases/download/1.0.2/Patcher.exe)
 2. Open Patcher.exe and wait 1-2 seconds then a window and a list of clients will show
 
 ## Usage:
