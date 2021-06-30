@@ -1,44 +1,42 @@
 'use strict';
 // in MAIN process
 
-var path = require('path'),
+var os = require('os'),
+	fs = require('fs'),
+	path = require('path'),
 	electron = require('electron'),
 	main = require('./main.json'),
 	fetch = require('./fetch'),
-	renderer_inject = require('./renderer-inject'),
 	log = console.log.bind(console, '[SPLOIT]'),
-	hooks = {};
+	is_host = (url, ...hosts) => hosts.some(host => url.hostname == host || url.hostname.endsWith('.' + host)),
+	protocol = 'yendispro' + (Math.random() + '').substr(2);
 
 log('Injected main');
-
-var protocol = 'kpalstinks' + (Math.random() + '').substr(2);
 
 electron.protocol.registerSchemesAsPrivileged([ { scheme: protocol, privileges: { bypassCSP: true } } ]);
 
 electron.app.on('ready', () => {
-	electron.protocol.registerBufferProtocol(protocol, (request, callback) => {
+	electron.protocol.registerBufferProtocol(protocol, async (request, callback) => {
 		var url = new URL('https' + request.url.substr(protocol.length));
 		
 		log('Fetching', url);
 		
-		fetch(url, {
-			headers: request.headers,
-			method: request.method,
-			body: request.body,
-		}).then(res => res.buffer().then(data => {
-			log('Calling callback..');
-			
-			callback({
-				mimeType: res.headers.get('content-type'),
-				data: Buffer.concat([ data, Buffer.from(`;(${renderer_inject})()`) ]),
-			});
-		})).catch(err => {
-			log('Error on request', err);
-			
-			callback({
-				mimeType: res.headers.get('content-type'),
-				data: Buffer.alloc(0),
-			});
+		var res = await fetch(url, {
+				headers: request.headers,
+				method: request.method,
+				body: request.body,
+			}),
+			data = await res.buffer();
+		
+		log('Reading inject');
+		
+		var inject = fs.readFileSync(path.join(__dirname, 'renderer.js'), 'utf8');
+		
+		log('Calling callback..');
+		
+		callback({
+			mimeType: res.headers.get('content-type'),
+			data: Buffer.concat([ data, Buffer.from(`;${inject}`) ]),
 		});
 	});
 	
@@ -50,24 +48,6 @@ electron.app.on('ready', () => {
 		callback(details);
 	});
 });
-
-/*
-Object.defineProperty(require.cache[require.resolve('electron')], 'exports', { value: hooks });
-
-var descs = Object.getOwnPropertyDescriptors(electron);
-
-for(var prop in descs)Object.defineProperty(hooks, prop, prop == 'BrowserWindow' ? { value: new Proxy(electron.BrowserWindow, {
-	construct(target, args){
-		var window = Reflect.construct(target, args);
-		
-		window.toggleDevTools();
-		
-		return window;
-	}
-}) } : descs[prop]);
-
-process.on('uncaughtException', err => log(err));
-*/
 
 // load main file
 require(path.resolve(__dirname, '..', main));

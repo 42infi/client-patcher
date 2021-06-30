@@ -1,4 +1,5 @@
 'use strict';
+
 var path = require('path'),
 	electron = require('electron');
 
@@ -23,6 +24,8 @@ electron.app.on('ready', () => {
 	
 	electron.ipcMain.handle('user-data', () => electron.app.getPath('userData'));
 	electron.ipcMain.on('devtools', () => window.toggleDevTools());
+	
+	window.webContents.openDevTools();
 	
 	window.removeMenu();
 	window.loadFile(path.join(__dirname, 'index.html'));

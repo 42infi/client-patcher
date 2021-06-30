@@ -1,11 +1,14 @@
+'use strict';
+
 var fs = require('original-fs'),
 	path = require('path'),
 	Asar = require('./asar'),
 	electron = require('electron'),
-	util = require('util'),
-	Utils = require('./util'),
-	utils = new Utils(),
-	config = {
+	node_utils = require('util'),
+	Utils = require('./utils'),
+	utils = new Utils();
+
+var config = {
 		data: [],
 		default: [
 			{
@@ -39,45 +42,10 @@ var fs = require('original-fs'),
 		},
 		async load(){
 			this.file = path.join(await electron.ipcRenderer.invoke('user-data'), 'clients.json');
-			return this.data = JSON.parse(await fs.promises.readFile(this.file).catch(err => (console.error(err), JSON.stringify(this.default))));
+			this.data = JSON.parse(await fs.promises.readFile(this.file).catch(err => (console.error(err), JSON.stringify(this.default))));
 		},
 	},
-	node_tree = (nodes, parent = document) => {
-		var output = {
-				parent: parent,
-			},
-			match_container = /^\$\s+>?/g,
-			match_parent = /^\^\s+>?/g;
-		
-		for(var label in nodes){
-			var value = nodes[label];
-			
-			if(value instanceof Node)output[label] = value;
-			else if(typeof value == 'object')output[label] = node_tree(value, output.container);
-			else if(match_container.test(nodes[label])){
-				if(!output.container){
-					console.warn('No container is available, could not access', value);
-					continue;
-				}
-				
-				output[label] = output.container.querySelector(nodes[label].replace(match_container, ''));
-			}else if(match_parent.test(nodes[label])){
-				if(!output.parent){
-					console.warn('No parent is available, could not access', value);
-					continue;
-				}
-				
-				output[label] = output.parent.querySelector(nodes[label].replace(match_parent, ''));
-			}else{
-				output[label] = document.querySelector(nodes[label]);
-			}
-			
-			if(!output[label])console.warn('No node found, could not access', value);
-		}
-		
-		return output;
-	},
-	nodes = node_tree({
+	nodes = utils.node_tree({
 		container: '.app',
 		overlay: '$ > .overlay',
 		clients: {
@@ -90,7 +58,6 @@ var fs = require('original-fs'),
 			container: '.bar',
 			close: '$ > .actions > .close',
 			reset: '$ > .toolbar > .reset',
-			github: '$ > .toolbar > .github',
 			devtools: '$ > .toolbar > .devtools',
 			version: '$ .version',
 		},
@@ -144,13 +111,13 @@ class Client {
 		this.path = data.path;
 		this.icon = data.icon;
 		
-		this.card = node_tree({
+		this.card = utils.node_tree({
 			container: nodes.clients.container.appendChild(nodes.clients.template_card.cloneNode(true)),
 			label: '$ > .label',
 			image: '$ > .image',
 		});
 		
-		this.panel = node_tree({
+		this.panel = utils.node_tree({
 			container: nodes.container.appendChild(nodes.clients.template_panel.cloneNode(true)),
 			info: {
 				container: '^ > .info',
@@ -327,7 +294,7 @@ class Client {
 		return asar.exists(this.key);
 	}
 	async exists(){
-		return this.path ? await fs.promises.access(this.path).then(() => true).catch(() => false) : false;
+		return this.path ? await fs.promises.access(this.asar_path).then(() => true).catch(err => console.error(err) + false) : (console.error(this, 'has no path'), false);
 	}
 	async unpatch(){
 		var patch_message = this.panel.actions.patch.dataset.dtooltip;
@@ -351,7 +318,7 @@ class Client {
 		try{
 			await asar.save();
 		}catch(err){
-			alert(`Could not gain access, try relaunching the patcher with administrator privileges.\n\n${util.format(err)}`);
+			alert(`Could not gain access, try relaunching the patcher with administrator privileges.\n\n${node_utils.format(err)}`);
 		}
 		
 		this.patching = false;
@@ -402,7 +369,7 @@ class Client {
 		try{
 			await asar.save();
 		}catch(err){
-			alert(`Could not gain access, try relaunching the patcher with administrator privileges.\n\n${util.format(err)}`);
+			alert(`Could not gain access, try relaunching the patcher with administrator privileges.\n\n${node_utils.format(err)}`);
 		}
 		
 		this.stop_patch();
@@ -431,8 +398,6 @@ config.load().then(() => {
 		
 		await config.save();
 	});
-	
-	nodes.bar.github.addEventListener('click', () => electron.shell.openExternal('https://github.com/e9x/kru/tree/master/patcher'));
 	
 	nodes.bar.devtools.addEventListener('click', () => electron.ipcRenderer.send('devtools'));
 });
