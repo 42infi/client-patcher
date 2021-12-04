@@ -28,10 +28,10 @@ Tool for injecting Sploit into Krunker clients
 ## Building the patcher:
 
 1. Clone this repository
-`git clone https://github.com/e9x/kru.git`
+`git clone https://github.com/y9x/client-patcher.git`
 
 2. Enter the patcher folder
-`cd e9x/patcher`
+`cd client-patcher`
 
 3. Install dependencies
 `./!INSTALL_MODULES.cmd`
