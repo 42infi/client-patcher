@@ -5,6 +5,8 @@ The Krunker Client Patcher is an application that will patch Krunker clients to 
 
 ## Images
 
-![Client List](./screenshots/Client List.png)
-![Client Info](./screenshots/Client Info.png)
-![In-Game](./screenshots/In-Game.png)
+![Client List](./screenshots/ClientList.png)
+
+![Client Info](./screenshots/ClientInfo.png)
+
+![In-Game](./screenshots/InGame.png)
