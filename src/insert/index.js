@@ -6,7 +6,6 @@ var os = require('os'),
 	path = require('path'),
 	electron = require('electron'),
 	fetch = require('./fetch'),
-	log = console.log.bind(console, '[Patcher]'),
 	is_host = (url, ...hosts) => hosts.some(host => url.hostname == host || url.hostname.endsWith('.' + host)),
 	protocol = 'k' + (Math.random() + '').substr(2);
 
@@ -36,7 +35,7 @@ electron.app.on('ready', () => {
 	electron.session.defaultSession.webRequest.onBeforeRequest((details, callback) => {
 		var url = new URL(details.url);
 		
-		if(url.protocol == 'https:' && (url.host == 'krunker.io' || url.host.endsWith('.krunker.io')) && url.pathname == '/libs/zip.js')return log('GO TO ', `${protocol}:${url.href.substr(url.protocol.length)}`), callback({ cancel: false, redirectURL: `${protocol}:${url.href.substr(url.protocol.length)}` });
+		if(url.protocol == 'https:' && (url.host == 'krunker.io' || url.host.endsWith('.krunker.io')) && url.pathname == '/libs/zip.js')return callback({ cancel: false, redirectURL: `${protocol}:${url.href.substr(url.protocol.length)}` });
 		
 		if(typeof listener.callback == 'function'){
 			if(typeof listener.filter == 'object' && Array.isArray(listener.filter.urls)){
