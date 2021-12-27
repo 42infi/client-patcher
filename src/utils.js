@@ -4,9 +4,17 @@ var child_process = require('child_process');
 
 class Utils {
 	process_running(name){
-		var command = process.platform == 'win32'
-			? 'tasklist /fi ' + JSON.stringify('ImageName eq ' + name)
-			: 'ps aux';
+		var command;
+		
+		switch(process.platform){
+			case'win32':
+				command = 'tasklist /fi ' + JSON.stringify('ImageName eq ' + name);
+				break;
+			case'linux':
+				// does this really support linux?
+				command = 'ps aux';
+				break;
+		}
 		
 		return new Promise(resolve => child_process.exec(command, (err, stdout, stderr) => {
 			if(process.platform == 'win32')return resolve(!stdout.includes('No tasks are running which match the specified criteria'));

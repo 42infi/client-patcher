@@ -309,7 +309,7 @@ class Client {
 		
 		var electron_package = JSON.parse(await asar.read_file('package.json'));
 		
-		electron_package.main = JSON.parse(await asar.read_file(this.key + '/main.json'));
+		electron_package.main = JSON.parse(await asar.read_file(`${this.key}/main.json`));
 		
 		await asar.write_file('package.json', JSON.stringify(electron_package));
 		
@@ -360,7 +360,7 @@ class Client {
 		var new_entry = this.key + '/index.js',
 			relative = path.posix.relative(asar.resolve(new_entry, true), asar.resolve(electron_package.main, true));
 		
-		await asar.write_file(this.key + '/main.json', JSON.stringify(electron_package.main, true));
+		await asar.write_file(`${this.key}/main.json`, JSON.stringify(electron_package.main, true));
 		
 		electron_package.main = new_entry;
 		
