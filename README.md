@@ -1,8 +1,6 @@
 # Patcher
 Tool for injecting Sploit into Krunker clients
 
-[Source](src)
-
 ## Installation:
 
 1. Download the [standalone executable](https://github.com/y9x/client-patcher/releases/download/1.0.2/Patcher.exe)
