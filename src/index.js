@@ -2,11 +2,11 @@
 
 var fs = require('original-fs'),
 	path = require('path'),
-	Asar = require('./asar'),
 	electron = require('electron'),
 	node_utils = require('util'),
-	Utils = require('./utils'),
-	utils = new Utils();
+	utils = require('./Utils'),
+	Asar = require('./Asar'),
+	{ version } = require('./package.json');
 
 var config = {
 		data: [],
@@ -59,6 +59,7 @@ var config = {
 			close: '$ > .actions > .close',
 			reset: '$ > .toolbar > .reset',
 			devtools: '$ > .toolbar > .devtools',
+			github: '$ > .toolbar > .github',
 			version: '$ .version',
 		},
 	});
@@ -391,6 +392,8 @@ config.load().then(() => {
 		for(var client of config.data)if(client.focused && !client.card.container.contains(event.target) && !client.panel.container.contains(event.target))client.blur();
 	});
 	
+	nodes.bar.github.addEventListener('click', () => electron.ipcRenderer.send('github'));
+	
 	nodes.bar.reset.addEventListener('click', async () => {
 		for(var client of [...config.data])await client.remove();
 		
@@ -404,4 +407,4 @@ config.load().then(() => {
 
 nodes.bar.close.addEventListener('click', () => window.close());
 
-nodes.bar.version.textContent = require('./package.json').version;
+nodes.bar.version.textContent = version;

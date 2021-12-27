@@ -3,7 +3,7 @@
 var child_process = require('child_process');
 
 class Utils {
-	process_running(name){
+	static process_running(name){
 		var command;
 		
 		switch(process.platform){
@@ -21,7 +21,7 @@ class Utils {
 			else resolve(stdout.toLowerCase().includes(name))
 		}));
 	}
-	stop_process(name){
+	static stop_process(name){
 		var command = process.platform == 'win32'
 			? 'taskkill /F /IM ' + JSON.stringify(name) : 'killall ' + JSON.stringify(name);
 		
@@ -29,7 +29,7 @@ class Utils {
 		
 		return new Promise(resolve => child_process.exec(command, (err, stdout, stderr) => resolve()));
 	}
-	node_tree(nodes, parent = document){
+	static node_tree(nodes, parent = document){
 		var output = {
 				parent: parent,
 			},

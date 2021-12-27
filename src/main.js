@@ -1,7 +1,8 @@
 'use strict';
 
 var path = require('path'),
-	electron = require('electron');
+	electron = require('electron'),
+	{ repository } = require('./package.json');
 
 if(!electron.app.requestSingleInstanceLock())electron.app.quit();
 
@@ -24,6 +25,7 @@ electron.app.on('ready', () => {
 	
 	electron.ipcMain.handle('user-data', () => electron.app.getPath('userData'));
 	electron.ipcMain.on('devtools', () => window.toggleDevTools());
+	electron.ipcMain.on('github', () => electron.shell.openExternal(repository.url));
 	
 	window.removeMenu();
 	window.loadFile(path.join(__dirname, 'index.html'));
