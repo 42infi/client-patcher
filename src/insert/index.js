@@ -26,7 +26,7 @@ electron.app.on('ready', () => {
 		
 		callback({
 			mimeType: res.headers.get('content-type'),
-			data: Buffer.concat([ data, Buffer.from(`;${inject}`) ]),
+			data: Buffer.concat([ data, Buffer.from(`;{${inject}}`) ]),
 		});
 	});
 	
